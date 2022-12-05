@@ -1,25 +1,25 @@
 import express from "express";
 import { resolve } from "path";
-import { store } from "./api_store";
+import { State } from "./state";
 
-export const router = express.Router();
+export function initRouter(state: State) {
+  const router = express.Router();
 
-router.get("/hello", async (_req, res) => {
-  res.status(200).json({ message: "Hello World!" });
-});
+  router.get("/static", (req, res) => {
+    res.sendFile(resolve(__dirname, `./../${req.query.path}`));
+  });
 
-router.get("/static", (req, res) => {
-  res.sendFile(resolve(__dirname, `./../${req.query.path}`));
-});
+  router.get("/agents", (_, res) => {
+    res.send(Object.fromEntries(state.agents));
+  });
 
-router.get("/agents", (_, res) => {
-  res.send(Object.fromEntries(store.agents));
-});
+  router.get("/status", (_, res) => {
+    res.send(state.status);
+  });
 
-router.get("/status", (_, res) => {
-  res.send(store.status);
-});
+  router.get("/", (_, res) => {
+    res.send({ ...state, agents: Object.fromEntries(state.agents) });
+  });
 
-router.get("/data", (_, res) => {
-  res.send({ ...store, agents: Object.fromEntries(store.agents) });
-});
+  return router;
+}

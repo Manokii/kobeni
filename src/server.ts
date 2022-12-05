@@ -1,13 +1,13 @@
 import "dotenv/config";
 import express from "express";
-import { assetWarmUp } from "lib/asset_warmup";
+import { State } from "lib/state";
 import { join } from "path";
-import { router } from "./lib/router";
+import { initRouter } from "./lib/router";
 
-const { PORT = 3001 } = process.env;
+export const { PORT = 3001 } = process.env;
 
 async function initServer() {
-  assetWarmUp();
+  const state = new State();
   const app = express();
 
   // Middleware that parses json and looks at requests
@@ -15,7 +15,7 @@ async function initServer() {
   app.use(express.json());
 
   // Serve API requests from the router
-  app.use("/api", router);
+  app.use("/api", initRouter(state));
 
   // Serve app production bundle
   app.use(express.static("dist/app"));
@@ -26,8 +26,10 @@ async function initServer() {
   });
 
   app.listen(PORT, () => {
-    console.log(`Server listening at http://localhost:${PORT}`);
+    console.log(`Server listening at ${state.hostUrl}`);
   });
+
+  await state.init();
 }
 
 initServer();

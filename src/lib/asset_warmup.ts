@@ -2,8 +2,8 @@ import cliProgress from "cli-progress";
 import needle from "needle";
 import { createWriteStream, existsSync, mkdirSync } from "node:fs";
 import type { Agents, Version } from "../types/val_api";
-import { store } from "./api_store";
 import { valApiGot } from "./axios_instance";
+import type { State } from "./state";
 
 const downloadFileTask = (url: string, path: string) => (): Promise<void> =>
   new Promise<void>((resolve, reject) => {
@@ -21,14 +21,14 @@ const downloadFileTask = (url: string, path: string) => (): Promise<void> =>
       .catch((err) => reject(err));
   });
 
-export const assetWarmUp = async () => {
-  const previousStatus = store.status;
-  store.status = "AssetWarmUp";
+export const assetWarmUp = async (state: State) => {
+  const previousStatus = state.status;
+  state.setStatus("AssetWarmUp");
   const client = valApiGot();
 
   const res = await client.get("version").json<Version>();
   const version = res?.data.version;
-  store.version = res?.data || store.version;
+  state.version = res?.data || state.version;
   const rootAssetFolder = "./dist/assets";
   const patchFolder = `${rootAssetFolder}/${version}`;
   const patchFolderAgent = patchFolder + "/agents";
@@ -62,6 +62,8 @@ export const assetWarmUp = async () => {
     const bgPath = `${agentPath}/bg.png`;
     const voiceLinePath = `${agentPath}/voiceline.wav`;
 
+    const asset = (path: string) => `${state.apiUrl}/static?path=${path}`;
+
     if (portrait) {
       tasks.push(downloadFileTask(portrait, portraitPath));
     }
@@ -90,21 +92,21 @@ export const assetWarmUp = async () => {
       }
     });
 
-    store.agents.set(agent.uuid, {
+    state.agents.set(agent.uuid, {
       abilities: agent.abilities.map((a) => ({
         desc: a.description,
-        icon: `${abilitiesPath}/${a.slot}.png`,
+        icon: asset(`${abilitiesPath}/${a.slot}.png`),
         name: a.displayName,
         slot: a.slot,
       })),
-      bg: bgPath,
+      bg: asset(bgPath),
       bgColors: agent.backgroundGradientColors,
       desc: agent.description,
       devName: agent.developerName,
-      icon: iconPath,
+      icon: asset(iconPath),
       id: agent.uuid,
       name: agent.displayName,
-      portrait: portraitPath,
+      portrait: asset(portraitPath),
       role: {
         desc: agent.role?.description || "",
         icon: agent.role?.displayIcon || "",
@@ -113,7 +115,7 @@ export const assetWarmUp = async () => {
       },
       voiceLine: {
         duration: agent.voiceLine.maxDuration,
-        url: voiceLinePath,
+        url: asset(voiceLinePath),
       },
     });
   });
@@ -133,5 +135,5 @@ export const assetWarmUp = async () => {
   bar.stop();
 
   console.log(`✅ Downloading ${tasks.length} assets finished.`);
-  store.status = previousStatus;
+  state.setStatus(previousStatus);
 };
