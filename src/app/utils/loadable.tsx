@@ -1,5 +1,6 @@
 import { LoadingOverlay } from "@mantine/core";
-import { FunctionComponent, Suspense } from "react";
+import type { FunctionComponent } from "react";
+import { Suspense } from "react";
 
 export function withLoader<T extends object>(Component: FunctionComponent<T>) {
   const SuspensedComponent = (props: T) => {
