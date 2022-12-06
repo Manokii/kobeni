@@ -1,5 +1,6 @@
 import "dotenv/config";
 import express from "express";
+import http from "http";
 import { State } from "lib/state";
 import { join } from "path";
 import { initRouter } from "./lib/router";
@@ -7,8 +8,9 @@ import { initRouter } from "./lib/router";
 export const { PORT = 3001 } = process.env;
 
 async function initServer() {
-  const state = new State();
   const app = express();
+  const server = http.createServer(app);
+  const state = new State(server);
 
   // Middleware that parses json and looks at requests
   // where the Content-Type header matches the type option.
@@ -25,11 +27,17 @@ async function initServer() {
     res.sendFile(join(__dirname, "app/index.html"));
   });
 
-  app.listen(PORT, () => {
-    console.log(`Server listening at ${state.hostUrl}`);
+  server.listen(PORT, () => {
+    console.log(`
+=======================================================
+
+  Server listening at ${state.hostUrl}
+
+=======================================================
+`);
   });
 
-  await state.init();
+  await state.init(true);
 }
 
 initServer();

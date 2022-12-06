@@ -10,4 +10,4 @@ export const getLockfile = async (): Promise<Env> => {
   return { raw, auth: `Basic ${base64}`, basePath: `127.0.0.1:${port}` };
 };
 
-export type Lockfile = ReturnType<typeof getLockfile>;
+export type Lockfile = Awaited<ReturnType<typeof getLockfile>>;

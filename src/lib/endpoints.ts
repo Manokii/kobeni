@@ -20,9 +20,7 @@ const getHeaders = (entitlement: Entitlement) => {
   };
 };
 
-export const getLocalAxios = (port: string, entitlement: Entitlement) => {
-  // convert the code below to use got instead of axios
-
+export const getLocalGot = (port: string, entitlement: Entitlement) => {
   return got.extend({
     prefixUrl: `http://127.0.0.1:${port}`,
     headers: getHeaders(entitlement),
@@ -30,7 +28,7 @@ export const getLocalAxios = (port: string, entitlement: Entitlement) => {
   });
 };
 
-export const getPdAxios = (entitlement: Entitlement) => {
+export const getPdGot = (entitlement: Entitlement) => {
   return got.extend({
     prefixUrl: `https://pd.${region}-1.a.pvp.net`,
     headers: getHeaders(entitlement),
@@ -38,7 +36,7 @@ export const getPdAxios = (entitlement: Entitlement) => {
   });
 };
 
-export const getGlzAxios = (token: Entitlement) => {
+export const getGlzGot = (token: Entitlement) => {
   return got.extend({
     prefixUrl: `https://glz-${region}-1.${region}.a.pvp.net`,
     headers: getHeaders(token),
