@@ -26,3 +26,4 @@ dist-ssr
 .DS_Store
 *.local
 .eslintcache
+vite.config.ts.timestamp*

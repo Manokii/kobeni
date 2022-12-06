@@ -1,7 +1,14 @@
 # Welcome
 
-### What is this?
+## Development
 
-This is a boilerplate for small applications that need to run in 1 command
+To start the development of this app, first you must install nodejs then just run
+`npm install` and `npm run dev` in this directory
 
-This boilerplate app will be most likely used for overlay projects that needs to run in a server
+## Compiling
+
+1. We use nexe to compile the node app into an executable, first install all the
+   nexe prerequisites then run `npm run compile`
+1. After that a `.exe` file will be generated in the `dist` directory
+1. You can run the app by running `dist\app.exe`. This does not require any
+   nodejs installation
