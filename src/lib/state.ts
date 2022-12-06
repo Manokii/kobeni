@@ -1,7 +1,7 @@
 import { address } from "ip";
 import { PORT } from "server";
 import { Config } from "types/config";
-import { VersionData } from "types/val_api";
+import { VersionData } from "types/valorant_api";
 import { assetWarmUp } from "./asset_warmup";
 import type { Lockfile } from "./get_lockfile";
 
@@ -39,7 +39,8 @@ export interface ApiRole {
 export type StateStatus =
   | "AssetWarmUp"
   | "Initializing"
-  | "LookingForValorantEXE"
+  | "LookingForLockfile"
+  | "LookingForValorantExe"
   | "WaitingForMatch"
   | "Ready"
   | "AgentSelect"
@@ -47,7 +48,6 @@ export type StateStatus =
   | "Unknown";
 
 export class State {
-  #initializing = false;
   #lockfile: Lockfile | null = null;
   agents: Map<string, ApiAgent> = new Map();
   version: VersionData | null = null;
@@ -58,6 +58,7 @@ export class State {
     manualAgentSelect: false,
     pollingInterval: 1000,
   };
+  ticker: NodeJS.Timer | null = null;
 
   constructor() {
     this.hostUrl = `http://${address()}:${PORT}`;
@@ -68,15 +69,25 @@ export class State {
     this.config = { ...this.config, ...config };
   }
 
-  async init() {
-    this.#initializing = true;
-    if (!this.#initializing) return;
+  async init(startTicker?: boolean) {
     this.setStatus("Initializing");
     await assetWarmUp(this);
-    this.setStatus("LookingForValorantEXE");
+    this.setStatus("LookingForValorantExe");
   }
 
   setStatus(status: StateStatus) {
     this.status = status;
+  }
+
+  set(state: Partial<State>) {
+    Object.assign(this, state);
+  }
+
+  async reset(options?: { init: true; startTicker?: boolean }) {
+    Object.assign(this, new State());
+    if (!options?.init) return this;
+    const { startTicker = true } = options;
+    this.init(startTicker);
+    return this;
   }
 }

@@ -1,7 +1,6 @@
-import axios from "axios";
 import got from "got";
 import os from "node:os";
-import { Entitlement } from "../types/entitlement";
+import type { Entitlement } from "../types/entitlement";
 
 const region = "ap";
 
@@ -22,23 +21,28 @@ const getHeaders = (entitlement: Entitlement) => {
 };
 
 export const getLocalAxios = (port: string, entitlement: Entitlement) => {
-  return axios.create({
-    baseURL: `http://127.0.0.1:${port}`,
+  // convert the code below to use got instead of axios
+
+  return got.extend({
+    prefixUrl: `http://127.0.0.1:${port}`,
     headers: getHeaders(entitlement),
+    responseType: `json`,
   });
 };
 
 export const getPdAxios = (entitlement: Entitlement) => {
-  return axios.create({
-    baseURL: `https://pd.${region}-1.a.pvp.net`,
+  return got.extend({
+    prefixUrl: `https://pd.${region}-1.a.pvp.net`,
     headers: getHeaders(entitlement),
+    responseType: "json",
   });
 };
 
 export const getGlzAxios = (token: Entitlement) => {
-  return axios.create({
-    baseURL: `https://glz-${region}-1.${region}.a.pvp.net`,
+  return got.extend({
+    prefixUrl: `https://glz-${region}-1.${region}.a.pvp.net`,
     headers: getHeaders(token),
+    responseType: "json",
   });
 };
 

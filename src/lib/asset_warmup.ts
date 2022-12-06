@@ -1,8 +1,8 @@
 import cliProgress from "cli-progress";
 import needle from "needle";
 import { createWriteStream, existsSync, mkdirSync } from "node:fs";
-import type { Agents, Version } from "../types/val_api";
-import { valApiGot } from "./axios_instance";
+import type { Agents, Version } from "../types/valorant_api";
+import { valApiGot } from "./endpoints";
 import type { State } from "./state";
 
 const downloadFileTask = (url: string, path: string) => (): Promise<void> =>
@@ -21,14 +21,14 @@ const downloadFileTask = (url: string, path: string) => (): Promise<void> =>
       .catch((err) => reject(err));
   });
 
-export const assetWarmUp = async (state: State) => {
-  const previousStatus = state.status;
-  state.setStatus("AssetWarmUp");
+export const assetWarmUp = async (state?: State) => {
+  const previousStatus = state?.status || "Unknown";
+  state?.setStatus("AssetWarmUp");
   const client = valApiGot();
 
   const res = await client.get("version").json<Version>();
   const version = res?.data.version;
-  state.version = res?.data || state.version;
+  state?.set({ version: res?.data || state.version });
   const rootAssetFolder = "./dist/assets";
   const patchFolder = `${rootAssetFolder}/${version}`;
   const patchFolderAgent = patchFolder + "/agents";
@@ -62,7 +62,7 @@ export const assetWarmUp = async (state: State) => {
     const bgPath = `${agentPath}/bg.png`;
     const voiceLinePath = `${agentPath}/voiceline.wav`;
 
-    const asset = (path: string) => `${state.apiUrl}/static?path=${path}`;
+    const asset = (path: string) => `${state?.apiUrl}/static?path=${path}`;
 
     if (portrait) {
       tasks.push(downloadFileTask(portrait, portraitPath));
@@ -92,7 +92,7 @@ export const assetWarmUp = async (state: State) => {
       }
     });
 
-    state.agents.set(agent.uuid, {
+    state?.agents.set(agent.uuid, {
       abilities: agent.abilities.map((a) => ({
         desc: a.description,
         icon: asset(`${abilitiesPath}/${a.slot}.png`),
@@ -135,5 +135,5 @@ export const assetWarmUp = async (state: State) => {
   bar.stop();
 
   console.log(`✅ Downloading ${tasks.length} assets finished.`);
-  state.setStatus(previousStatus);
+  state?.setStatus(previousStatus);
 };

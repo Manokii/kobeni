@@ -21,5 +21,10 @@ export function initRouter(state: State) {
     res.send({ ...state, agents: Object.fromEntries(state.agents) });
   });
 
+  router.post("/reset", async () => {
+    state.reset();
+    return { message: "A reset was requested", success: true };
+  });
+
   return router;
 }
