@@ -16,7 +16,7 @@ export const assetWarmUp = async (state?: State) => {
 
   const res = await client.get("version").json<Version>();
   const version = res?.data.version;
-  state?.set({ version: res?.data || state.version });
+  state?.setState({ version: res?.data || state.version });
   const rootAssetDir = "./dist/assets";
   const patchDir = `${rootAssetDir}/${version}`;
 

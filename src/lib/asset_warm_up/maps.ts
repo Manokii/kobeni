@@ -47,7 +47,7 @@ export async function warmupMaps(
       addTask(downloadFileTask(splash, splashPath));
     }
 
-    state?.maps.set(map.uuid, {
+    state?.maps.set(map.mapUrl, {
       ...map,
       displayIcon: asset(iconPath),
       listViewIcon: asset(listViewIconPath),

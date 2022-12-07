@@ -1,5 +1,5 @@
 {
-  "name": "server",
+  "name": "kobeni",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -8,7 +8,7 @@
     "dev": "concurrently -c \"blue,yellow\" -n \"Client,Server\" \"npm run client:dev\" \"npm run server:dev\"",
     "client:dev": "vite",
     "server:dev": "nodemon --watch \"src/**\" --ext \"ts,json\" --ignore \"src/app/**/*\" --exec \"npm run build && node dist/server.cjs\"",
-    "server:build": "esbuild ./src/server.ts --minify --bundle --format=cjs --outfile=dist/server.cjs --platform=node",
+    "server:build": "esbuild ./src/server.ts --bundle --format=cjs --outfile=dist/server.cjs --platform=node",
     "assets:init": "esbuild ./src/init_files.ts --minify --bundle --format=cjs --outfile=dist/init_files.cjs --platform=node && node dist/init_files.cjs",
     "client:build": "vite build",
     "build": "npm run server:build && npm run client:build",
@@ -20,6 +20,7 @@
     "compile": "npm run build && npm run assets:init && nexe dist/server.cjs -o dist/server.exe -r dist/app/**/* -r dist/assets/**/* --build -t windows --verbose"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "1.9.1",
     "@tabler/icons": "1.115.0",
     "@tanstack/react-router": "0.0.1-beta.28",
     "axios": "1.2.0",
@@ -31,9 +32,13 @@
     "needle": "3.2.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-redux": "8.0.5",
+    "redux": "4.2.0",
     "socket.io": "4.5.4",
+    "socket.io-client": "4.5.4",
     "ts-retry-promise": "0.7.0",
-    "ws": "8.11.0"
+    "ws": "8.11.0",
+    "zod": "3.19.1"
   },
   "devDependencies": {
     "@emotion/react": "11.10.5",

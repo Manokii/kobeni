@@ -1,9 +1,9 @@
 export interface MapData {
   status: number;
-  data: Map[];
+  data: ValMap[];
 }
 
-export interface Map {
+export interface ValMap {
   uuid: string;
   displayName: string;
   coordinates: string;

@@ -2,16 +2,18 @@ import { Server } from "http";
 import { address } from "ip";
 import { Server as SocketIOServer } from "socket.io";
 import { retryDecorator } from "ts-retry-promise";
-import { Map as StateMap } from "types/map";
-import { Skin, Weapon } from "types/weapon";
+import type { Account } from "types/account";
+import type { Config } from "types/config";
+import type { Entitlement } from "types/entitlement";
+import type { ValMap } from "types/map";
+import type { Player } from "types/pregame";
+import type { VersionData } from "types/valorant_api";
+import type { Skin, Weapon } from "types/weapon";
 import { PORT } from "../server";
-import type { Config } from "../types/config";
-import type { Entitlement } from "../types/entitlement";
-import type { VersionData } from "../types/valorant_api";
 import { assetWarmUp } from "./asset_warm_up";
 import { getLockfile, Lockfile } from "./get_lockfile";
 import { getToken } from "./get_token";
-import { getPlayer, getPregameMatch } from "./utils";
+import { getAccountById, getPlayer, getPregameMatch } from "./utils";
 
 export interface StateAgent {
   name: string;
@@ -24,13 +26,10 @@ export interface StateAgent {
   bgColors: string[];
   role: StateRole;
   abilities: StateAbility[];
-  voiceLine: {
-    duration: number;
-    url: string;
-  };
+  voiceLine: { duration: number; url: string };
 }
 
-interface StateAbility {
+export interface StateAbility {
   slot: string;
   name: string;
   icon: string;
@@ -55,10 +54,12 @@ export type StateStatus =
   | "Loading"
   | "Unknown";
 
-type Player = {
+export type StatePlayer = {
   puuid: string;
   characterId: string;
   status: string;
+  name: string;
+  tag: string;
   agent: StateAgent | null;
 };
 
@@ -68,55 +69,65 @@ export type StateWeapon = Omit<Weapon, "skins"> & {
 
 export class State {
   #isTickerOn = false;
-  #initializing = false;
   #lockfile: Lockfile | null = null;
   #token: Entitlement | null = null;
   #httpServer: Server;
   #wsServer: SocketIOServer;
   #ticker: NodeJS.Timer | null = null;
+
   agents: Map<string, StateAgent> = new Map();
-  maps: Map<string, StateMap> = new Map();
+  maps: Map<string, ValMap> = new Map();
   weapons: Map<string, StateWeapon> = new Map();
-  blue: Player[] = [];
-  red: Player[] = [];
+  accounts: Map<string, Account> = new Map();
+
+  blue: StatePlayer[] = [];
+  red: StatePlayer[] = [];
+  mapId = "";
   version: VersionData | null = null;
   status: StateStatus = "Unknown";
   apiUrl: string;
   hostUrl: string;
-  config: Config = {
-    manualAgentSelect: false,
-    pollingInterval: 1000,
-  };
   matchId = "";
+  config: Config = { manualAgentSelect: false, pollingInterval: 1000 };
 
   constructor(server: Server) {
     this.hostUrl = `http://${address()}:${PORT}`;
     this.apiUrl = `${this.hostUrl}/api`;
     this.#httpServer = server;
     this.#wsServer = new SocketIOServer(server, { cors: { origin: "*" } });
+    this.#wsServer.on("connect", (socket) => {
+      socket.emit("agentSelect", {
+        matchId: this.matchId,
+        red: this.red,
+        blue: this.blue,
+        map: this.maps.get(this.mapId) || null,
+      });
+    });
   }
 
   setConfig(config: Partial<Config>) {
     this.config = { ...this.config, ...config };
   }
 
-  async init(startTicker?: boolean) {
-    this.#initializing = true;
-    this.setStatus("Initializing");
+  async assetWarmUp() {
     await assetWarmUp(this);
+    return this;
+  }
+
+  async init(startTicker?: boolean) {
+    this.setStatus("Initializing");
+    await this.assetWarmUp();
 
     if (!startTicker) return;
 
     const retries = "INFINITELY";
     const timeout = "INFINITELY";
     const delay = 3000;
-    const until = (t: unknown) => !t || !this.#initializing;
 
     const getLockFileFn = retryDecorator(getLockfile, {
       delay,
       retries,
       timeout,
-      until,
       logger() {
         console.log("🔑 Looking for lockfile, please open valorant...");
       },
@@ -126,7 +137,6 @@ export class State {
       delay,
       retries,
       timeout,
-      until,
       logger() {
         console.log("🎮 Looking for valorant...");
       },
@@ -138,21 +148,20 @@ export class State {
     const entitlement = await getTokenFn(this.#lockfile);
     this.#token = entitlement || null;
 
-    this.#initializing = false;
     this.setStatus("LookingForValorantExe");
+    this.start();
   }
 
   setStatus(status: StateStatus) {
     this.status = status;
   }
 
-  set(state: Partial<State>) {
+  setState(state: Partial<State>) {
     Object.assign(this, state);
   }
 
   async reset(options?: { init: true; startTicker?: boolean }) {
     this.stop();
-    this.#initializing = false;
 
     const newState = new State(this.#httpServer);
     Object.assign(this, newState);
@@ -168,62 +177,65 @@ export class State {
   }
 
   start() {
-    if (!this.#token) return;
+    if (!this.#token) {
+      return console.log("No token found");
+    }
+
     this.#isTickerOn = true;
     console.log("Ticker Started");
 
     this.#ticker = setInterval(async () => {
-      /**
-       * Check if all the prerequisite are correct
-       * - It's not manual agent select
-       * - Ticker is on
-       * - Token is present
-       */
       if (this.config.manualAgentSelect || !this.#isTickerOn || !this.#token) return;
 
-      /**
-       * If matchId is not present, try to get it
-       */
       if (!this.matchId) {
         try {
           this.setStatus("WaitingForMatch");
-          console.log("⏳ Checking for ongoing match");
+          console.log("⏳ Waiting for match start");
           const data = await getPlayer(this.#token);
-          this.matchId = data.MatchID || this.matchId;
+          this.setState({ matchId: data.MatchID || this.matchId });
         } catch {
-          console.log("✖️ No match found.");
+          return;
         }
       }
 
-      await getPregameMatch(this.matchId, this.#token)
-        .then((data) => {
-          for (const team of data.Teams) {
-            if (team.TeamID === "Blue") {
-              this.blue = team.Players.map((player) => ({
-                characterId: player.CharacterID,
-                puuid: player.Subject,
-                status: player.CharacterSelectionState,
-                agent: this.agents.get(player.CharacterID) || null,
-              }));
-            }
-            if (team.TeamID === "Red") {
-              this.red = team.Players.map((player) => ({
-                characterId: player.CharacterID,
-                puuid: player.Subject,
-                status: player.CharacterSelectionState,
-                agent: this.agents.get(player.CharacterID) || null,
-              }));
-            }
-          }
-        })
-        .catch();
+      const mapPlayer = (player: Player): StatePlayer => {
+        const account = this.accounts.get(player.Subject);
+        if (!account) {
+          getAccountById(player.Subject)
+            .then((acc) => this.accounts.set(player.Subject, acc))
+            .catch();
+        }
+
+        return {
+          characterId: player.CharacterID,
+          puuid: player.Subject,
+          name: this.accounts.get(player.Subject)?.name || "",
+          tag: this.accounts.get(player.Subject)?.tag || "",
+          status: player.CharacterSelectionState,
+          agent: this.agents.get(player.CharacterID.toLowerCase()) || null,
+        };
+      };
+
+      try {
+        const pregame = await getPregameMatch(this.matchId, this.#token);
+        this.setState({ mapId: pregame.MapID || this.mapId });
+        for (const team of pregame.Teams) {
+          if (team.TeamID === "Blue") this.blue = team.Players.map(mapPlayer);
+          if (team.TeamID === "Red") this.red = team.Players.map(mapPlayer);
+        }
+      } catch {
+        this.setState({ matchId: "" });
+        return;
+      }
 
       this.setStatus("AgentSelect");
       this.#wsServer.emit("agentSelect", {
         matchId: this.matchId,
         red: this.red,
         blue: this.blue,
+        map: this.maps.get(this.mapId) || null,
       });
+      this.#wsServer.emit("state", this);
     }, this.config.pollingInterval);
   }
 
@@ -236,7 +248,7 @@ export class State {
   }
 
   sanitizeWeapon(weapon: StateWeapon) {
-    return Object.assign(weapon, { skins: Object.fromEntries(weapon.skins) });
+    return Object.assign(weapon, { skins: Object.fromEntries(Object.entries(weapon.skins)) });
   }
 
   sanitizedWeapons() {

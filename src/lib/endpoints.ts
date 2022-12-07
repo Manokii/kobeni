@@ -51,3 +51,11 @@ export const valApiGot = () => {
     responseType: "json",
   });
 };
+
+export const henrikApi = () => {
+  return got.extend({
+    prefixUrl: "https://api.henrikdev.xyz/valorant/v1",
+    headers: { "content-type": "application/json" },
+    responseType: "json",
+  });
+};
