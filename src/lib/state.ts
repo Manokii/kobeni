@@ -1,3 +1,4 @@
+import "dotenv/config"
 import { Server } from "http"
 import { address } from "ip"
 import { Server as SocketIOServer } from "socket.io"
@@ -9,11 +10,12 @@ import type { ValMap } from "types/map"
 import type { Player } from "types/pregame"
 import type { VersionData } from "types/valorant_api"
 import type { Skin, Weapon } from "types/weapon"
-import { PORT } from "../server"
 import { assetWarmUp } from "./asset_warm_up"
 import { getLockfile, Lockfile } from "./get_lockfile"
 import { getToken } from "./get_token"
 import { getAccountById, getPlayer, getPregameMatch } from "./utils"
+
+const { PORT = 3001 } = process.env
 
 export interface StateAgent {
   name: string
@@ -104,17 +106,10 @@ export class State {
     this.config = { ...this.config, ...config }
   }
 
-  async assetWarmUp() {
-    const oldStatus = this.status
-    this.setStatus("AssetWarmUp")
-    await assetWarmUp(this)
-    this.setStatus(oldStatus)
-    return this
-  }
-
   async init(startTicker?: boolean) {
     this.setStatus("Initializing")
-    await this.assetWarmUp()
+    this.setStatus("AssetWarmUp")
+    await assetWarmUp(this)
 
     if (!startTicker) return
 

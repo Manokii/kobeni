@@ -1,6 +1,6 @@
 import cliProgress from "cli-progress"
+import "dotenv/config"
 import { existsSync, mkdirSync } from "node:fs"
-import { PORT } from "server"
 import type { Version } from "../../types/valorant_api"
 import { valApiGot } from "../endpoints"
 import type { State } from "../state"
@@ -9,6 +9,8 @@ import { warmupMaps } from "./maps"
 import type { Task } from "./utils"
 import { warmupWeapons } from "./weapons"
 
+const { PORT = 3001 } = process.env
+
 export const assetWarmUp = async (state?: State) => {
   const previousStatus = state?.status || "Unknown"
   state?.setStatus("AssetWarmUp")
@@ -16,7 +18,7 @@ export const assetWarmUp = async (state?: State) => {
 
   const res = await client.get("version").json<Version>()
   const version = res?.data.version
-  state?.setState({ version: res?.data || state.version })
+  state?.setState({ version: res?.data || state?.version })
   const rootAssetDir = "./dist/assets"
   const patchDir = `${rootAssetDir}/${version}`
 

@@ -5,7 +5,7 @@ import { State } from "lib/state"
 import { join } from "path"
 import { initRouter } from "./lib/router"
 
-export const { PORT = 3001 } = process.env
+const { PORT = 3001 } = process.env
 
 async function initServer() {
   const app = express()

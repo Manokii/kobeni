@@ -1,9 +1,8 @@
-import { sanitizeFileName } from "lib/utils"
 import { existsSync, mkdirSync } from "node:fs"
-import { PORT } from "server"
-import { Chroma, Skin, WeaponData } from "types/weapon"
+import { sanitizeFileName } from "../../lib/utils"
+import type { Chroma, Skin, WeaponData } from "../../types/weapon"
 import { valApiGot } from "../endpoints"
-import { State, StateWeapon } from "../state"
+import type { State, StateWeapon } from "../state"
 import { downloadFileTask, Task } from "./utils"
 
 export async function warmupWeapons(
@@ -34,10 +33,6 @@ export async function warmupWeapons(
     const killFeedPath = `${weaponPath}/killfeed.png`
     const iconPath = `${weaponPath}/icon.png`
     const shopPath = `${weaponPath}/shop.png`
-
-    const asset = (path: string) => {
-      return `${state?.apiUrl || `http://localhost:${PORT}`}/static?path=${path}`
-    }
 
     if (icon) {
       addTask(downloadFileTask(icon, iconPath))

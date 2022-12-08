@@ -1,8 +1,7 @@
 import { existsSync, mkdirSync } from "node:fs"
-import { PORT } from "server"
-import { Agents } from "../../types/valorant_api"
+import type { Agents } from "../../types/valorant_api"
 import { valApiGot } from "../endpoints"
-import { State } from "../state"
+import type { State } from "../state"
 import { downloadFileTask, Task } from "./utils"
 
 export async function warmupAgents(
@@ -37,10 +36,6 @@ export async function warmupAgents(
     const bgPath = `${agentPath}/bg.png`
     const voiceLinePath = `${agentPath}/voiceline.wav`
     const rolePath = `${agentPath}/role.png`
-
-    const asset = (path: string) => {
-      return `${state?.apiUrl || `http://localhost:${PORT}`}/static?path=${path}`
-    }
 
     if (portrait) {
       addTask(downloadFileTask(portrait, portraitPath))

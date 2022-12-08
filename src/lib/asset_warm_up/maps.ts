@@ -1,8 +1,8 @@
-import { sanitizeFileName } from "lib/utils"
 import { existsSync, mkdirSync } from "node:fs"
-import { MapData } from "types/map"
+import { sanitizeFileName } from "../../lib/utils"
+import type { MapData } from "../../types/map"
 import { valApiGot } from "../endpoints"
-import { State } from "../state"
+import type { State } from "../state"
 import { downloadFileTask, Task } from "./utils"
 
 export async function warmupMaps(
