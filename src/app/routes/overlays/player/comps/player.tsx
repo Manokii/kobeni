@@ -1,4 +1,5 @@
 import { Box } from "@mantine/core"
+import { AnimatePresence, motion } from "framer-motion"
 import { StatePlayer } from "lib/state"
 
 interface Props {
@@ -43,35 +44,58 @@ const Player = ({ player, side }: Props) => {
           />
         </Box>
       )} */}
-      <img
-        src={player.agent?.portrait || ""}
-        alt=""
-        style={{
-          zIndex: 30,
-          height: "100%",
-          width: "auto",
-          position: "absolute",
-          top: 0,
-          left: "50%",
-          transform: "translateX(-50%)",
-        }}
-      />
+      <AnimatePresence>
+        {!!player.agent && player.status === "locked" && (
+          <motion.div
+            key={player.agent.id}
+            initial={{ opacity: 0, y: "20px" }}
+            animate={{ opacity: 1, y: "0px" }}
+            exit={{ opacity: 0, y: "-20px" }}
+            style={{
+              zIndex: 30,
+              height: "100%",
+              width: "100%",
+              position: "relative",
+            }}
+          >
+            <img
+              src={player.agent?.portrait || ""}
+              alt=""
+              style={{
+                height: "100%",
+                width: "auto",
+                position: "absolute",
+                top: 0,
+                left: "50%",
+                transform: "translateX(-50%)",
+              }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      <Box
-        sx={{
-          zIndex: 10,
-          height: "100%",
-          width: "100%",
-          position: "absolute",
-          top: 0,
-          left: 0,
-          backgroundSize: "contain",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          opacity: 0.3,
-          backgroundImage: `url("${player.agent?.bg}")`,
-        }}
-      />
+      <AnimatePresence>
+        {!!player.agent && (
+          <motion.div
+            key={player.agent.id}
+            initial={{ opacity: 0, y: "-20px" }}
+            animate={{ opacity: player.status === "locked" ? 0.15 : 0.3, y: "0px" }}
+            exit={{ opacity: 0, y: "10px" }}
+            style={{
+              zIndex: 10,
+              height: "100%",
+              width: "100%",
+              position: "absolute",
+              top: 0,
+              left: 0,
+              backgroundSize: "contain",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+              backgroundImage: `url("${player.agent.bg}")`,
+            }}
+          ></motion.div>
+        )}
+      </AnimatePresence>
     </Box>
   )
 }

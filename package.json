@@ -28,6 +28,7 @@
     "cli-progress": "3.11.2",
     "dotenv": "16.0.3",
     "express": "4.18.2",
+    "framer-motion": "7.6.19",
     "got": "12.5.3",
     "ip": "1.1.8",
     "needle": "3.2.0",
