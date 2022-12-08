@@ -8,7 +8,7 @@ const DashboardMainPage = () => {
         tempore delectus suscipit soluta labore? Alias ex voluptatum officia ipsam! Ea, recusandae.
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default DashboardMainPage;
+export default DashboardMainPage

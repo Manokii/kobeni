@@ -1,9 +1,9 @@
-import { Box, MantineProvider } from "@mantine/core";
-import { RouterProvider } from "@tanstack/react-router";
-import { Provider } from "react-redux";
-import { reduxStore } from "./redux";
-import { router } from "./router";
-import SocketProvider from "./socket/socket.provider";
+import { Box, MantineProvider } from "@mantine/core"
+import { RouterProvider } from "@tanstack/react-router"
+import { Provider } from "react-redux"
+import { reduxStore } from "./redux"
+import { router } from "./router"
+import SocketProvider from "./socket/socket.provider"
 
 function App() {
   return (
@@ -22,7 +22,7 @@ function App() {
         </Provider>
       </MantineProvider>
     </Box>
-  );
+  )
 }
 
-export default App;
+export default App

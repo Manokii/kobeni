@@ -1,2 +1,2 @@
-export * from "./redux.state.slice";
-export * from "./redux.store";
+export * from "./redux.state.slice"
+export * from "./redux.store"

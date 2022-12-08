@@ -1,12 +1,12 @@
-import { Button, Center, Container, Stack, Text, Title } from "@mantine/core";
-import { useMatch } from "@tanstack/react-router";
+import { Button, Center, Container, Stack, Text, Title } from "@mantine/core"
+import { useMatch } from "@tanstack/react-router"
 
 const HomePage = () => {
-  const router = useMatch("/");
+  const router = useMatch("/")
 
   const gotoDashboard = () => {
-    router.navigate({ to: "/dashboard" });
-  };
+    router.navigate({ to: "/dashboard" })
+  }
   return (
     <Container size="xs" h="100%">
       <Center h="100%">
@@ -24,7 +24,7 @@ const HomePage = () => {
         </Stack>
       </Center>
     </Container>
-  );
-};
+  )
+}
 
-export default HomePage;
+export default HomePage

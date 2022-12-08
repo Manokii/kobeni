@@ -1,7 +1,7 @@
-import { Group } from "@mantine/core";
+import { Group } from "@mantine/core"
 
 const TeamPage = () => {
-  return <Group noWrap>test</Group>;
-};
+  return <Group noWrap>test</Group>
+}
 
-export default TeamPage;
+export default TeamPage

@@ -1,6 +1,6 @@
-import { AppShell } from "@mantine/core";
-import { Outlet } from "@tanstack/react-router";
-import SideNav from "../../comps/side_nav";
+import { AppShell } from "@mantine/core"
+import { Outlet } from "@tanstack/react-router"
+import SideNav from "../../comps/side_nav"
 
 const DashboardLayout = () => {
   return (
@@ -9,7 +9,7 @@ const DashboardLayout = () => {
         <Outlet />
       </div>
     </AppShell>
-  );
-};
+  )
+}
 
-export default DashboardLayout;
+export default DashboardLayout

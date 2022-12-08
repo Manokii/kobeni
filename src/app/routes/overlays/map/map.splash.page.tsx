@@ -1,9 +1,9 @@
-import { Image } from "@mantine/core";
-import { useStateData } from "../../../redux/redux.hook";
+import { Image } from "@mantine/core"
+import { useStateData } from "../../../redux/redux.hook"
 
 const MapSplash = () => {
-  const { map: valMap } = useStateData();
-  return <>{!valMap || <Image src={valMap.splash || ""} />}</>;
-};
+  const { map: valMap } = useStateData()
+  return <>{!valMap || <Image src={valMap.splash || ""} />}</>
+}
 
-export default MapSplash;
+export default MapSplash
