@@ -10,6 +10,7 @@ const PlayerTeamPage = () => {
 
   const fillTeam = (players: StatePlayer[]): StatePlayer[] => {
     const firstPlayer = players[0] || red[0] || blue[0]
+    if (!firstPlayer) return []
     return [...players, ...new Array(5 - players.length).fill(firstPlayer)]
   }
 

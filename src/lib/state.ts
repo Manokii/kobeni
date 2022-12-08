@@ -96,12 +96,7 @@ export class State {
     this.#httpServer = server
     this.#wsServer = new SocketIOServer(server, { cors: { origin: "*" } })
     this.#wsServer.on("connect", (socket) => {
-      socket.emit("agentSelect", {
-        matchId: this.matchId,
-        red: this.red,
-        blue: this.blue,
-        map: this.maps.get(this.mapId) || null,
-      })
+      socket.emit("agentSelect", this.getAgentSelect())
     })
   }
 
@@ -110,7 +105,10 @@ export class State {
   }
 
   async assetWarmUp() {
+    const oldStatus = this.status
+    this.setStatus("AssetWarmUp")
     await assetWarmUp(this)
+    this.setStatus(oldStatus)
     return this
   }
 
@@ -142,9 +140,11 @@ export class State {
       },
     })
 
+    this.setStatus("LookingForLockfile")
     const env = await getLockFileFn()
     this.#lockfile = env || this.#lockfile
 
+    this.setStatus("LookingForLockfile")
     const entitlement = await getTokenFn(this.#lockfile)
     this.#token = entitlement || null
 
@@ -162,7 +162,7 @@ export class State {
 
   async reset(options?: { init: true; startTicker?: boolean }) {
     this.stop()
-
+    this.setStatus("Initializing")
     const newState = new State(this.#httpServer)
     Object.assign(this, newState)
 
@@ -229,13 +229,8 @@ export class State {
       }
 
       this.setStatus("AgentSelect")
-      this.#wsServer.emit("agentSelect", {
-        matchId: this.matchId,
-        red: this.red,
-        blue: this.blue,
-        map: this.maps.get(this.mapId) || null,
-      })
-      this.#wsServer.emit("agentSelect", this)
+      this.#wsServer.emit("agentSelect", this.getAgentSelect())
+      this.#wsServer.emit("state", this.toJSON())
     }, this.config.pollingInterval)
   }
 
@@ -274,6 +269,15 @@ export class State {
       agents: this.sanitizedAgents(),
       weapons: this.sanitizedWeapons(),
       maps: this.sanitizedMaps(),
+    }
+  }
+
+  getAgentSelect() {
+    return {
+      matchId: this.matchId,
+      red: this.red,
+      blue: this.blue,
+      map: this.maps.get(this.mapId) || null,
     }
   }
 }

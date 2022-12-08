@@ -1,6 +1,9 @@
-import { createStyles, Navbar, ScrollArea, Stack } from "@mantine/core"
+import { Button, Card, createStyles, Navbar, ScrollArea, Stack, Text } from "@mantine/core"
 import { IconBrandTabler, TablerIcon } from "@tabler/icons"
+import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
+import { QKey } from "../queries"
+import { getStatus, resetState } from "../queries/state"
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon")
@@ -59,6 +62,7 @@ const links: Link[] = [
 ]
 
 const SideNav = () => {
+  const { data } = useQuery([QKey.State, "status"], { queryFn: getStatus, refetchInterval: 3000 })
   const { classes, cx } = useStyles()
   const [active, setActive] = useState<typeof links[number]["link"]>("/")
 
@@ -82,6 +86,17 @@ const SideNav = () => {
       <Navbar.Section grow component={ScrollArea} mx="-xs" px="xs">
         <Stack>{linkComps}</Stack>
       </Navbar.Section>
+
+      <Stack>
+        {data && (
+          <Card py="xs">
+            <Text size="xs">Status: {data?.status}</Text>
+          </Card>
+        )}
+        <Button size="xs" color="red" onClick={resetState}>
+          Reset
+        </Button>
+      </Stack>
     </Navbar>
   )
 }

@@ -6,15 +6,18 @@ import Player from "./comps/player"
 
 const PlayerScenePage = () => {
   const { red, blue } = useStateData()
-  const { search } = useMatch("/overlays/players/")
+  const { search } = useMatch("/overlays/players/all")
 
   const fillTeam = (players: StatePlayer[]): StatePlayer[] => {
     const firstPlayer = players[0] || red[0] || blue[0]
+    if (!firstPlayer) return []
     return [...players, ...new Array(5 - players.length).fill(firstPlayer)]
   }
 
   const completeBlue = fillTeam(blue)
   const completeRed = fillTeam(red)
+
+  console.log({ red, blue })
 
   return (
     <Box p={search.p || 30} px={search.px || 100} py={search.py} h="100%" w="100%">

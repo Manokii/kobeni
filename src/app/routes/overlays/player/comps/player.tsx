@@ -1,20 +1,19 @@
 import { Box } from "@mantine/core"
 import { StatePlayer } from "lib/state"
-import { Color, hexToRgb, Solver } from "../../../../utils/color_filter"
 
 interface Props {
   player: StatePlayer
   side: "red" | "blue"
 }
 const Player = ({ player, side }: Props) => {
-  const rgb = hexToRgb(side === "red" ? "#b94650" : "#3d70c2")
-  const color = new Color(rgb[0], rgb[1], rgb[2])
-  const solver = new Solver(color)
-  const result = solver.solve()
+  // const rgb = hexToRgb(side === "red" ? "#b94650" : "#3d70c2")
+  // const color = new Color(rgb[0], rgb[1], rgb[2])
+  // const solver = new Solver(color)
+  // const result = solver.solve()
 
   return (
     <Box h="100%" sx={{ position: "relative", overflow: "visible" }}>
-      {side && (
+      {/* {side && (
         <Box
           h="100%"
           sx={{
@@ -43,7 +42,7 @@ const Player = ({ player, side }: Props) => {
             }}
           />
         </Box>
-      )}
+      )} */}
       <img
         src={player.agent?.portrait || ""}
         alt=""

@@ -7,7 +7,8 @@ export function initRouter(state: State) {
 
   router.get("/", (_, res) => res.send(state.toJSON()))
   router.get("/static", (req, res) => res.sendFile(resolve(__dirname, `./../${req.query.path}`)))
-  router.get("/status", (_, res) => res.send(state.status))
+  router.get("/status", (_, res) => res.send({ status: state.status, version: state.version }))
+  router.get("/agentSelect", (_, res) => res.send(state.getAgentSelect()))
 
   //  Agents --------------------------------------
   router.get("/agents", (_, res) => res.send(state.sanitizedAgents()))

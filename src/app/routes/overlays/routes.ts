@@ -41,7 +41,7 @@ const PlayerSoloPage = lazy(() => import("./player/player.solo.page"))
 const playerRoute = overlayRoute.createRoute({ path: "players" })
 
 const playerAllRoute = playerRoute.createRoute({
-  path: "/",
+  path: "/all",
   component: PlayerAllPage,
   validateSearch: playerSearch,
 })
