@@ -9,7 +9,7 @@
     "client:dev": "vite",
     "server:dev": "nodemon --watch \"src/**\" --ext \"ts,json\" --ignore \"src/app/**/*\" --exec \"npm run build && node dist/server.cjs\"",
     "server:build": "esbuild ./src/server.ts --bundle --format=cjs --outfile=dist/server.cjs --platform=node",
-    "assets:init": "esbuild ./src/init_files.ts --minify --bundle --format=cjs --outfile=dist/init_files.cjs --platform=node && node dist/init_files.cjs",
+    "assets:init": "esbuild ./src/init_files.ts --bundle --format=cjs --outfile=dist/init_files.cjs --platform=node && node dist/init_files.cjs",
     "client:build": "vite build",
     "build": "npm run server:build && npm run client:build",
     "serve": "vite preview",
@@ -17,7 +17,7 @@
     "test": "prettier --check . && eslint . && stylelint \"**/*.css\"",
     "start": "node dist/server.cjs",
     "lint": "prettier -w .",
-    "compile": "npm run build && npm run assets:init && nexe dist/server.cjs -o dist/server.exe -r dist/app/**/* -r dist/assets/**/* --build -t windows --verbose"
+    "compile": "npm run build && npm run assets:init && nexe dist/server.cjs -o dist/server.exe -r dist/app/**/* -r dist/assets/**/* --build -t windows --verbose --name kobeni"
   },
   "dependencies": {
     "@reduxjs/toolkit": "1.9.1",

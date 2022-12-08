@@ -1,6 +1,7 @@
+import "dotenv/config"
 import { existsSync, mkdirSync } from "node:fs"
 import { sanitizeFileName } from "../../lib/utils"
-import type { Chroma, Skin, WeaponData } from "../../types/weapon"
+import type { Skin, WeaponData } from "../../types/weapon"
 import { valApiGot } from "../endpoints"
 import type { State, StateWeapon } from "../state"
 import { downloadFileTask, Task } from "./utils"
@@ -46,82 +47,84 @@ export async function warmupWeapons(
       addTask(downloadFileTask(killFeed, killFeedPath))
     }
 
-    const skinsDir = `${weaponPath}/skins`
-    if (!existsSync(skinsDir)) {
-      mkdirSync(skinsDir)
-    }
+    // const skinsDir = `${weaponPath}/skins`
+    // if (!existsSync(skinsDir)) {
+    //   mkdirSync(skinsDir)
+    // }
 
-    const includeSkins = process.env.INCLUDE_SKINS === "true"
-
+    // const includeSkins = process.env.INCLUDE_SKINS === "true"
     const skins: Map<string, Skin> = new Map()
     weapon.skins.forEach((skin) => {
-      if (!includeSkins) {
-        return skins.set(skin.uuid, skin)
-      }
-
-      const skinName = sanitizeFileName(skin.displayName)
-      const skinDir = `${skinsDir}/${skinName}`
-
-      if (!existsSync(skinDir)) {
-        mkdirSync(skinDir)
-      }
-
-      const skinIconPath = `${skinDir}/icon.png`
-      const wallpaperPath = `${skinDir}/wallpaper.png`
-
-      const wallpaper = skin.wallpaper
-      const icon = skin.displayIcon
-
-      if (icon) {
-        addTask(downloadFileTask(icon, skinIconPath))
-      }
-
-      if (wallpaper) {
-        addTask(downloadFileTask(wallpaper, wallpaperPath))
-      }
-
-      const newSkin: Skin = Object.assign(skin, {
-        displayIcon: asset(skinIconPath),
-        wallpaper: asset(wallpaperPath),
-        chromas: skin.chromas.map((chroma) => {
-          const chromaName = sanitizeFileName(chroma.displayName)
-          const chromasDir = `${skinsDir}/chromas`
-          const chromaDir = `${chromasDir}/${chromaName}`
-
-          if (!existsSync(chromasDir)) {
-            mkdirSync(chromasDir)
-          }
-
-          if (!existsSync(chromaDir)) {
-            mkdirSync(chromaDir)
-          }
-
-          const iconPath = `${chromaDir}/icon.png`
-          const renderPath = `${chromaDir}/full_render.png`
-
-          const icon = chroma.displayIcon
-          const render = chroma.fullRender
-
-          if (icon) {
-            addTask(downloadFileTask(icon, iconPath))
-          }
-
-          if (render) {
-            addTask(downloadFileTask(render, renderPath))
-          }
-
-          // We're using Object.assign for a little bit of performance
-          const newChroma = Object.assign<Chroma, Partial<Chroma>>(chroma, {
-            displayIcon: asset(iconPath),
-            fullRender: asset(render),
-          })
-
-          return newChroma
-        }),
-      })
-
-      skins.set(skin.uuid, newSkin)
+      return skins.set(skin.uuid, skin)
     })
+    // weapon.skins.forEach((skin) => {
+    //   if (!includeSkins) {
+    //     return skins.set(skin.uuid, skin)
+    //   }
+
+    //   const skinName = sanitizeFileName(skin.displayName)
+    //   const skinDir = `${skinsDir}/${skinName}`
+
+    //   if (!existsSync(skinDir)) {
+    //     mkdirSync(skinDir)
+    //   }
+
+    //   const skinIconPath = `${skinDir}/icon.png`
+    //   const wallpaperPath = `${skinDir}/wallpaper.png`
+
+    //   const wallpaper = skin.wallpaper
+    //   const icon = skin.displayIcon
+
+    //   if (icon) {
+    //     addTask(downloadFileTask(icon, skinIconPath))
+    //   }
+
+    //   if (wallpaper) {
+    //     addTask(downloadFileTask(wallpaper, wallpaperPath))
+    //   }
+
+    //   const newSkin: Skin = Object.assign(skin, {
+    //     displayIcon: asset(skinIconPath),
+    //     wallpaper: asset(wallpaperPath),
+    //     chromas: skin.chromas.map((chroma) => {
+    //       const chromaName = sanitizeFileName(chroma.displayName)
+    //       const chromasDir = `${skinsDir}/chromas`
+    //       const chromaDir = `${chromasDir}/${chromaName}`
+
+    //       if (!existsSync(chromasDir)) {
+    //         mkdirSync(chromasDir)
+    //       }
+
+    //       if (!existsSync(chromaDir)) {
+    //         mkdirSync(chromaDir)
+    //       }
+
+    //       const iconPath = `${chromaDir}/icon.png`
+    //       const renderPath = `${chromaDir}/full_render.png`
+
+    //       const icon = chroma.displayIcon
+    //       const render = chroma.fullRender
+
+    //       if (icon) {
+    //         addTask(downloadFileTask(icon, iconPath))
+    //       }
+
+    //       if (render) {
+    //         addTask(downloadFileTask(render, renderPath))
+    //       }
+
+    //       // We're using Object.assign for a little bit of performance
+    //       const newChroma = Object.assign<Chroma, Partial<Chroma>>(chroma, {
+    //         displayIcon: asset(iconPath),
+    //         fullRender: asset(render),
+    //       })
+
+    //       return newChroma
+    //     }),
+    //   })
+
+    //   skins.set(skin.uuid, newSkin)
+    // })
 
     const newWeapon: StateWeapon = {
       ...weapon,

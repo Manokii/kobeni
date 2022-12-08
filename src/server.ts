@@ -1,9 +1,9 @@
 import "dotenv/config"
 import express from "express"
 import http from "http"
-import { State } from "lib/state"
 import { join } from "path"
 import { initRouter } from "./lib/router"
+import { State } from "./lib/state"
 
 const { PORT = 3001 } = process.env
 
@@ -28,16 +28,17 @@ async function initServer() {
   })
 
   server.listen(PORT, () => {
-    console.log(`
-=======================================================
+    const msg = `
+    =======================================================
 
-  Server listening at ${state.hostUrl}
+      Server listening at ${state.hostUrl}
 
-=======================================================
-`)
+    =======================================================
+    `
+    console.log(msg)
   })
 
-  await state.init(true)
+  state.init(true)
 }
 
 initServer()
