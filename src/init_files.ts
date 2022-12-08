@@ -1,3 +1,3 @@
-import { assetWarmUp } from "./lib/asset_warm_up";
+import { assetWarmUp } from "./lib/asset_warm_up"
 
-assetWarmUp().then();
+assetWarmUp().then()

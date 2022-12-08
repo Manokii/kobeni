@@ -1,9 +1,12 @@
-import { createStyles, Navbar, ScrollArea, Stack } from "@mantine/core";
-import { IconBrandTabler, TablerIcon } from "@tabler/icons";
-import { useState } from "react";
+import { Button, Card, createStyles, Navbar, ScrollArea, Stack, Text } from "@mantine/core"
+import { IconBrandTabler, TablerIcon } from "@tabler/icons"
+import { useQuery } from "@tanstack/react-query"
+import { useState } from "react"
+import { QKey } from "../queries"
+import { getStatus, resetState } from "../queries/state"
 
 const useStyles = createStyles((theme, _params, getRef) => {
-  const icon = getRef("icon");
+  const icon = getRef("icon")
   return {
     link: {
       ...theme.fn.focusStyles(),
@@ -42,26 +45,26 @@ const useStyles = createStyles((theme, _params, getRef) => {
         },
       },
     },
-  };
-});
+  }
+})
 
 type Link = {
-  link: string;
-  label: string;
-  icon: TablerIcon;
-};
+  link: string
+  label: string
+  icon: TablerIcon
+}
 const links: Link[] = [
   {
     link: "/",
     label: "Main",
     icon: IconBrandTabler,
   },
-];
+]
 
 const SideNav = () => {
-  const { classes, cx } = useStyles();
-
-  const [active, setActive] = useState<typeof links[number]["link"]>("/");
+  const { data } = useQuery([QKey.State, "status"], { queryFn: getStatus, refetchInterval: 3000 })
+  const { classes, cx } = useStyles()
+  const [active, setActive] = useState<typeof links[number]["link"]>("/")
 
   const linkComps = links.map((item) => (
     <a
@@ -69,22 +72,33 @@ const SideNav = () => {
       href={item.link}
       key={item.link}
       onClick={(event) => {
-        event.preventDefault();
-        setActive(item.link);
+        event.preventDefault()
+        setActive(item.link)
       }}
     >
       <item.icon className={classes.linkIcon} stroke={1.5} />
       <span>{item.label}</span>
     </a>
-  ));
+  ))
 
   return (
     <Navbar width={{ sm: 300 }} p="md">
       <Navbar.Section grow component={ScrollArea} mx="-xs" px="xs">
         <Stack>{linkComps}</Stack>
       </Navbar.Section>
-    </Navbar>
-  );
-};
 
-export default SideNav;
+      <Stack>
+        {data && (
+          <Card py="xs">
+            <Text size="xs">Status: {data?.status}</Text>
+          </Card>
+        )}
+        <Button size="xs" color="red" onClick={resetState}>
+          Reset
+        </Button>
+      </Stack>
+    </Navbar>
+  )
+}
+
+export default SideNav

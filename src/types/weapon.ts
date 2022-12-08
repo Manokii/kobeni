@@ -1,67 +1,67 @@
 export interface WeaponData {
-  status: number;
-  data: Weapon[];
+  status: number
+  data: Weapon[]
 }
 
 export interface Weapon {
-  uuid: string;
-  displayName: string;
-  category: string;
-  defaultSkinUuid: string;
-  displayIcon: string;
-  killStreamIcon: string;
-  assetPath: string;
-  weaponStats: WeaponStats | null;
-  shopData: ShopData | null;
-  skins: Skin[];
+  uuid: string
+  displayName: string
+  category: string
+  defaultSkinUuid: string
+  displayIcon: string
+  killStreamIcon: string
+  assetPath: string
+  weaponStats: WeaponStats | null
+  shopData: ShopData | null
+  skins: Skin[]
 }
 
 export interface ShopData {
-  cost: number;
-  category: string;
-  categoryText: string;
-  gridPosition: GridPosition | null;
-  canBeTrashed: boolean;
-  image: null;
-  newImage: string;
-  newImage2: null;
-  assetPath: string;
+  cost: number
+  category: string
+  categoryText: string
+  gridPosition: GridPosition | null
+  canBeTrashed: boolean
+  image: null
+  newImage: string
+  newImage2: null
+  assetPath: string
 }
 
 export interface GridPosition {
-  row: number;
-  column: number;
+  row: number
+  column: number
 }
 
 export interface Skin {
-  uuid: string;
-  displayName: string;
-  themeUuid: string;
-  contentTierUuid: null | string;
-  displayIcon: null | string;
-  wallpaper: null | string;
-  assetPath: string;
-  chromas: Chroma[];
-  levels: Level[];
+  uuid: string
+  displayName: string
+  themeUuid: string
+  contentTierUuid: null | string
+  displayIcon: null | string
+  wallpaper: null | string
+  assetPath: string
+  chromas: Chroma[]
+  levels: Level[]
 }
 
 export interface Chroma {
-  uuid: string;
-  displayName: string;
-  displayIcon: null | string;
-  fullRender: string;
-  swatch: null | string;
-  streamedVideo: null | string;
-  assetPath: string;
+  uuid: string
+  displayName: string
+  displayIcon: null | string
+  fullRender: string
+  swatch: null | string
+  streamedVideo: null | string
+  assetPath: string
 }
 
 export interface Level {
-  uuid: string;
-  displayName: string;
-  levelItem: LevelItem | null;
-  displayIcon: null | string;
-  streamedVideo: null | string;
-  assetPath: string;
+  uuid: string
+  displayName: string
+  levelItem: LevelItem | null
+  displayIcon: null | string
+  streamedVideo: null | string
+  assetPath: string
 }
 
 export enum LevelItem {
@@ -81,34 +81,34 @@ export enum LevelItem {
 }
 
 export interface WeaponStats {
-  fireRate: number;
-  magazineSize: number;
-  runSpeedMultiplier: number;
-  equipTimeSeconds: number;
-  reloadTimeSeconds: number;
-  firstBulletAccuracy: number;
-  shotgunPelletCount: number;
-  wallPenetration: WallPenetration;
-  feature: null | string;
-  fireMode: null | string;
-  altFireType: AltFireType | null;
-  adsStats: AdsStats | null;
-  altShotgunStats: AltShotgunStats | null;
-  airBurstStats: AirBurstStats | null;
-  damageRanges: DamageRange[];
+  fireRate: number
+  magazineSize: number
+  runSpeedMultiplier: number
+  equipTimeSeconds: number
+  reloadTimeSeconds: number
+  firstBulletAccuracy: number
+  shotgunPelletCount: number
+  wallPenetration: WallPenetration
+  feature: null | string
+  fireMode: null | string
+  altFireType: AltFireType | null
+  adsStats: AdsStats | null
+  altShotgunStats: AltShotgunStats | null
+  airBurstStats: AirBurstStats | null
+  damageRanges: DamageRange[]
 }
 
 export interface AdsStats {
-  zoomMultiplier: number;
-  fireRate: number;
-  runSpeedMultiplier: number;
-  burstCount: number;
-  firstBulletAccuracy: number;
+  zoomMultiplier: number
+  fireRate: number
+  runSpeedMultiplier: number
+  burstCount: number
+  firstBulletAccuracy: number
 }
 
 export interface AirBurstStats {
-  shotgunPelletCount: number;
-  burstDistance: number;
+  shotgunPelletCount: number
+  burstDistance: number
 }
 
 export enum AltFireType {
@@ -118,16 +118,16 @@ export enum AltFireType {
 }
 
 export interface AltShotgunStats {
-  shotgunPelletCount: number;
-  burstRate: number;
+  shotgunPelletCount: number
+  burstRate: number
 }
 
 export interface DamageRange {
-  rangeStartMeters: number;
-  rangeEndMeters: number;
-  headDamage: number;
-  bodyDamage: number;
-  legDamage: number;
+  rangeStartMeters: number
+  rangeEndMeters: number
+  headDamage: number
+  bodyDamage: number
+  legDamage: number
 }
 
 export enum WallPenetration {

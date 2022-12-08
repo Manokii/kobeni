@@ -1,5 +1,5 @@
 const ControlPage = () => {
-  return <div>ControlPage</div>;
-};
+  return <div>ControlPage</div>
+}
 
-export default ControlPage;
+export default ControlPage
